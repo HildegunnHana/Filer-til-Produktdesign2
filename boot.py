@@ -1,7 +1,7 @@
 # This file is executed on every boot (including wake-boot from deepsleep)
 #import esp
 #esp.osdebug(None)
-import uos
+import uos, machine
 #uos.dupterm(None, 1) # disable REPL on UART(0)
 import gc
 import webrepl
@@ -38,9 +38,9 @@ sensorHoyre.prox.enableInterrupt(True)                                    # Enab
 sensorHoyre.prox.clearInterrupt()                                         # Clear interrupt
 
 #Setter pinner til motorene
-motorVenstreA = PWM(Pin(15, Pin.OUT))                                     # Node MCU Pin D8
+motorVenstreA = PWM(Pin(2, Pin.OUT))                                      # Node MCU Pin D4
 motorVenstreB = PWM(Pin(0, Pin.OUT))                                      # Node MCU Pin D3
-motorHoyreA   = PWM(Pin(13, Pin.OUT))                                     # Node MCU Pin d7
+motorHoyreA   = PWM(Pin(13, Pin.OUT))                                     # Node MCU Pin D7
 motorHoyreB   = PWM(Pin(12, Pin.OUT))                                     # Node MCU Pin D6
 
 #Starter med alle mororer avskrudd
@@ -50,13 +50,13 @@ motorHoyreA.duty(0)
 motorHoyreB.duty(0)
 
 #tallene viser kraften som motorene bruker. 0 er av og 1023 er max på
-motorVenstreHastighetFremover = 150 
-motorHoyreHastighetFremover   = 150
-motorVenstreHastighetBakover  = 600 
-motorHoyreHastighetBakover    = 600
-motorVenstreRaskereFremover   = 800
-motorHoyreRaskereFremover     = 800
-nivåSort                      = 5                                         # Sorthets nivå, testes i koden < 5
+motorVenstreHastighetFremover = 80 
+motorHoyreHastighetFremover   = 80
+motorVenstreHastighetBakover  = 60 
+motorHoyreHastighetBakover    = 60
+motorVenstreRaskereFremover   = 90
+motorHoyreRaskereFremover     = 90
+nivåSort                      = 180                                         # Sorthets nivå, testes i koden < 5
 
 # definisjoner/ funksjoner
 def kjorTilVenstreMotorFremover():                                        # Venstre motor kjører i gitt hastighet Fremover
@@ -96,32 +96,33 @@ def erPaaSvartNivaaHoyre(sesnorLevel):                                    # Niv�
     return rett                                                           # Returnerer verdien
     
 try :
+    sleep_ms(5000)                                                        # Venter ca. 5 sekunder før den starter
     while True:
         #Venstre side
-        sleep_ms(25)                                                      # wait for readout to be ready
+        sleep_ms(50)                                                      # wait for readout to be ready
         venstreSensorlevel=sensorVenstre.prox.proximityLevel              # setter nytt navn for venstre sensor sitt nærhetsnivå
         
         #print( venstreSensorlevel )   #Print the proximity value
         if ( erPaaSvartNivaaVenstre(venstreSensorlevel) ) :               # Sjekker den returnerte verdien fra tidligere
-            #print("er på sort nivå")
-            kjorTilVenstremotorBakover()                                  # Hvis sann kjører venstre motor bakover
+           # print("venstre er på sort nivå")
+            kjorTilVenstreMotorBakover()                                  # Hvis sann kjører venstre motor bakover
             
         else:
-           # print("er på hvitt nivå")
-            kjorTilVenstremotorFremover()                                 # Venstre sensor indikerer ikke svart, og kjører fremover
+           # print("venstre er på hvitt nivå")
+            kjorTilVenstreMotorFremover()                                 # Venstre sensor indikerer ikke svart, og kjører fremover
         
         #Høyre side
-        sleep_ms(25)                                                      # wait for readout to be ready
+        sleep_ms(50)                                                      # wait for readout to be ready
         hoyreSensorlevel=sensorHoyre.prox.proximityLevel                  # Setter nytt navn for høyre sensor sitt nærhetsnivå
         
         #print( hoyreSensorlevel )   #Print the proximity value
         if ( erPaaSvartNivaaHoyre(hoyreSensorlevel) ) :                   # Sjekker den returnerte verdien fra tidligere
-            #print("er på sort nivå")
-            kjorTilHoyremotorBakover()                                    # Hvis sann kjører høyre motor bakover
+           #print("høyre er på sort nivå")
+            kjorTilHoyreMotorBakover()                                    # Hvis sann kjører høyre motor bakover
             
         else:
-            #print("er på hvitt nivå")
-            kjorTilHoyremotorFremover()                                   # Høyre sensor indikerer ikke svart, og kjører fremover
+            #print("høyre er på hvitt nivå")
+            kjorTilHoyreMotorFremover()                                   # Høyre sensor indikerer ikke svart, og kjører fremover
 
 #Avslutter programmet med Ctrl + c
 except KeyboardInterrupt :
@@ -129,4 +130,4 @@ except KeyboardInterrupt :
    motorVenstreA.duty(0)
    motorVenstreB.duty(0)
    motorHoyreA.duty(0)
-   motorHoyreB.duty(0) 
+   motorHoyreB.duty(0)
