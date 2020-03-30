@@ -60,24 +60,20 @@ nivåSort                      = 180                                         # S
 
 # definisjoner/ funksjoner
 def kjorTilVenstreMotorFremover():                                        # Venstre motor kjører i gitt hastighet Fremover
-    #print("kjorTilVenstremotorFremover")
     motorVenstreA.duty(motorVenstreHastighetFremover)
     motorVenstreB.duty(0)
     
 def kjorTilHoyreMotorFremover():                                          # Høyre motor kjører i gitt hastighet Fremover
-    #print("kjorTilHoyremotorFremover")
     motorHoyreA.duty(motorHoyreHastighetFremover)
     motorHoyreB.duty(0)
     
 def kjorTilVenstreMotorBakover():                                         # Venstre motor kjører i gitt hastighet bakover
-    #print("kjorTilVenstremotorBakover")
     motorVenstreA.duty(0)
     motorVenstreB.duty(motorVenstreHastighetBakover)
     motorHoyreA.duty(motorHoyreRaskereFremover)
     sleep_ms(70)
 
 def kjorTilHoyreMotorBakover():                                           # Høyre motor kjører i gitt hastighet bakover
-   # print("kjorTilHoyremotorBakover")
     motorHoyreA.duty(0)
     motorHoyreB.duty(motorHoyreHastighetBakover)
     motorVenstreA.duty(motorVenstreRaskereFremover)
@@ -102,26 +98,20 @@ try :
         sleep_ms(50)                                                      # wait for readout to be ready
         venstreSensorlevel=sensorVenstre.prox.proximityLevel              # setter nytt navn for venstre sensor sitt nærhetsnivå
         
-        #print( venstreSensorlevel )   #Print the proximity value
         if ( erPaaSvartNivaaVenstre(venstreSensorlevel) ) :               # Sjekker den returnerte verdien fra tidligere
-           # print("venstre er på sort nivå")
             kjorTilVenstreMotorBakover()                                  # Hvis sann kjører venstre motor bakover
             
         else:
-           # print("venstre er på hvitt nivå")
             kjorTilVenstreMotorFremover()                                 # Venstre sensor indikerer ikke svart, og kjører fremover
         
         #Høyre side
         sleep_ms(50)                                                      # wait for readout to be ready
         hoyreSensorlevel=sensorHoyre.prox.proximityLevel                  # Setter nytt navn for høyre sensor sitt nærhetsnivå
         
-        #print( hoyreSensorlevel )   #Print the proximity value
         if ( erPaaSvartNivaaHoyre(hoyreSensorlevel) ) :                   # Sjekker den returnerte verdien fra tidligere
-           #print("høyre er på sort nivå")
             kjorTilHoyreMotorBakover()                                    # Hvis sann kjører høyre motor bakover
             
         else:
-            #print("høyre er på hvitt nivå")
             kjorTilHoyreMotorFremover()                                   # Høyre sensor indikerer ikke svart, og kjører fremover
 
 #Avslutter programmet med Ctrl + c
